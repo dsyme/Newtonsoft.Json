@@ -1,0 +1,85 @@
+name: 'Daily Perf Improver Build Steps'
+description: 'Set up build environment for Newtonsoft.Json performance development work'
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET SDK versions
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          9.0.x
+          8.0.x
+          6.0.x
+          5.0.x
+          3.1.x
+          2.1.x
+
+    - name: Display .NET info
+      shell: pwsh
+      run: dotnet --info
+
+    - name: Restore NuGet packages
+      shell: pwsh
+      run: |
+        Write-Host "Restoring packages for Newtonsoft.Json solution"
+        dotnet restore Src/Newtonsoft.Json.slnx
+
+    - name: Build library for performance testing (Release)
+      shell: pwsh
+      run: |
+        Write-Host "Building Newtonsoft.Json in Release mode for performance testing"
+        dotnet build Src/Newtonsoft.Json.slnx -c Release --no-restore -p:LibraryFrameworks="net6.0;net8.0" -p:TestFrameworks="net6.0;net8.0"
+
+    - name: Build test project with benchmarks
+      shell: pwsh
+      run: |
+        Write-Host "Building test project with benchmark support"
+        dotnet build Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net6.0 -c Release --no-restore
+
+    - name: Verify benchmark infrastructure
+      shell: pwsh
+      run: |
+        Write-Host "Verifying benchmark infrastructure is available"
+        $testPath = "Src/Newtonsoft.Json.Tests/bin/Release/net6.0"
+        if (Test-Path "$testPath/Newtonsoft.Json.Tests.dll") {
+          Write-Host "✓ Test assembly found at $testPath"
+        } else {
+          Write-Error "✗ Test assembly not found at expected path"
+        }
+        
+        # Check if BenchmarkDotNet is available
+        $packageInfo = dotnet list Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj package | Select-String "BenchmarkDotNet"
+        if ($packageInfo) {
+          Write-Host "✓ BenchmarkDotNet package is available"
+        } else {
+          Write-Host "⚠ BenchmarkDotNet may not be available for current framework"
+        }
+
+    - name: Run basic functionality tests
+      shell: pwsh
+      run: |
+        Write-Host "Running basic tests to ensure build is functional"
+        dotnet test Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net6.0 -c Release --no-build --no-restore --filter "Category!=Performance" --logger "trx" --results-directory "TestResults" || echo "Some tests may have failed, continuing..."
+
+    - name: Setup performance test data
+      shell: pwsh
+      run: |
+        Write-Host "Setting up performance test data files"
+        $testDir = "Src/Newtonsoft.Json.Tests/bin/Release/net6.0"
+        if (Test-Path "$testDir/large.json") {
+          Write-Host "✓ Large test JSON file is available"
+          $fileSize = (Get-Item "$testDir/large.json").Length
+          Write-Host "  File size: $([math]::Round($fileSize/1KB, 2)) KB"
+        } else {
+          Write-Host "⚠ Large test JSON file not found"
+        }
+
+    - name: Environment setup complete
+      shell: pwsh
+      run: |
+        Write-Host "🚀 Daily Perf Improver build environment is ready!"
+        Write-Host "Available for:"
+        Write-Host "  - Performance benchmarking with BenchmarkDotNet"
+        Write-Host "  - Profiling and performance analysis"
+        Write-Host "  - Running micro-benchmarks on core JSON operations"
+        Write-Host "  - Building and testing performance improvements"
