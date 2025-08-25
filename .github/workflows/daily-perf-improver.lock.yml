@@ -2,7 +2,7 @@
 # To update this file, edit the corresponding .md file and run:
 #   gh aw compile
 #
-# Effective stop-time: 2025-08-27 15:29:55
+# Effective stop-time: 2025-08-27 15:59:30
 
 name: "Daily Perf Improver"
 on:
@@ -18,7 +18,7 @@ concurrency:
 run-name: "Daily Perf Improver"
 
 jobs:
-  daily-perf-consultant:
+  daily-perf-improver:
     runs-on: ubuntu-latest
     permissions:
       actions: read
@@ -97,7 +97,7 @@ jobs:
           WORKFLOW_NAME="Daily Perf Improver"
           
           # Check stop-time limit
-          STOP_TIME="2025-08-27 15:29:55"
+          STOP_TIME="2025-08-27 15:59:30"
           echo "Checking stop-time limit: $STOP_TIME"
           
           # Convert stop time to epoch seconds
@@ -447,13 +447,13 @@ jobs:
         run: |
           # Copy the detailed execution file from Agentic Action if available
           if [ -n "${{ steps.agentic_execution.outputs.execution_file }}" ] && [ -f "${{ steps.agentic_execution.outputs.execution_file }}" ]; then
-            cp ${{ steps.agentic_execution.outputs.execution_file }} /tmp/daily-perf-consultant.log
+            cp ${{ steps.agentic_execution.outputs.execution_file }} /tmp/daily-perf-improver.log
           else
-            echo "No execution file output found from Agentic Action" >> /tmp/daily-perf-consultant.log
+            echo "No execution file output found from Agentic Action" >> /tmp/daily-perf-improver.log
           fi
           
           # Ensure log file exists
-          touch /tmp/daily-perf-consultant.log
+          touch /tmp/daily-perf-improver.log
       - name: Check if workflow-complete.txt exists, if so upload it
         id: check_file
         run: |
@@ -628,8 +628,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: daily-perf-consultant.log
-          path: /tmp/daily-perf-consultant.log
+          name: daily-perf-improver.log
+          path: /tmp/daily-perf-improver.log
           if-no-files-found: warn
       - name: Generate git patch
         if: always()
