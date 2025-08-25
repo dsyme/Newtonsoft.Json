@@ -4,7 +4,7 @@
 #
 # Effective stop-time: 2025-08-27 15:29:55
 
-name: "Daily Perf Consultant"
+name: "Daily Perf Improver"
 on:
   schedule:
   - cron: 0 2 * * 1-5
@@ -15,7 +15,7 @@ permissions: {}
 concurrency:
   group: "gh-aw-${{ github.workflow }}"
 
-run-name: "Daily Perf Consultant"
+run-name: "Daily Perf Improver"
 
 jobs:
   daily-perf-consultant:
@@ -94,7 +94,7 @@ jobs:
         run: |
           set -e
           echo "Performing safety checks before executing agentic tools..."
-          WORKFLOW_NAME="Daily Perf Consultant"
+          WORKFLOW_NAME="Daily Perf Improver"
           
           # Check stop-time limit
           STOP_TIME="2025-08-27 15:29:55"
@@ -125,7 +125,7 @@ jobs:
         run: |
           mkdir -p /tmp/aw-prompts
           cat > /tmp/aw-prompts/prompt.txt << 'EOF'
-          # Daily Perf Consultant
+          # Daily Perf Improver
           
           ## Job Description
           
@@ -334,7 +334,7 @@ jobs:
               engine_name: "Claude Code",
               model: "",
               version: "",
-              workflow_name: "Daily Perf Consultant",
+              workflow_name: "Daily Perf Improver",
               experimental: false,
               supports_tools_whitelist: true,
               supports_http_transport: true,
