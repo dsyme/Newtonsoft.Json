@@ -28,7 +28,7 @@ runs:
       shell: pwsh
       run: |
         Write-Host "Building Newtonsoft.Json in Release mode for performance testing"
-        dotnet build Src/Newtonsoft.Json.slnx -c Release --no-restore -p:LibraryFrameworks=net6.0;net8.0 -p:TestFrameworks=net6.0;net8.0
+        dotnet build Src/Newtonsoft.Json.slnx -c Release --no-restore -p:LibraryFrameworks="net6.0;net8.0" -p:TestFrameworks="net6.0;net8.0"
 
     - name: Build test project with benchmarks
       shell: pwsh
