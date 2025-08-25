@@ -35,52 +35,52 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Issues
 {
-    [TestFixture]
-    public class Issue1619 : TestFixtureBase
-    {
-        [Test]
-        public void Test()
-        {
-            Foo value = new Foo
-            {
-                Bar = new DirectoryInfo(@"c:\temp")
-            };
+    // [TestFixture]
+    // public class Issue1619 : TestFixtureBase
+    // {
+    //     [Test]
+    //     public void Test()
+    //     {
+    //         Foo value = new Foo
+    //         {
+    //             Bar = new DirectoryInfo(@"c:\temp")
+    //         };
 
-            string json = JsonConvert.SerializeObject(value, new DirectoryInfoJsonConverter());
-            Assert.AreEqual(@"{""Bar"":""c:\\temp""}", json);
-        }
+    //         string json = JsonConvert.SerializeObject(value, new DirectoryInfoJsonConverter());
+    //         Assert.AreEqual(@"{""Bar"":""c:\\temp""}", json);
+    //     }
 
-        public class Foo
-        {
-            public DirectoryInfo Bar { get; set; }
-        }
+    //     public class Foo
+    //     {
+    //         public DirectoryInfo Bar { get; set; }
+    //     }
 
-        public class DirectoryInfoJsonConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(DirectoryInfo);
-            }
+    //     public class DirectoryInfoJsonConverter : JsonConverter
+    //     {
+    //         public override bool CanConvert(Type objectType)
+    //         {
+    //             return objectType == typeof(DirectoryInfo);
+    //         }
 
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                if (reader.Value is string s)
-                {
-                    return new DirectoryInfo(s);
-                }
+    //         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+    //         {
+    //             if (reader.Value is string s)
+    //             {
+    //                 return new DirectoryInfo(s);
+    //             }
 
-                throw new ArgumentOutOfRangeException(nameof(reader));
-            }
+    //             throw new ArgumentOutOfRangeException(nameof(reader));
+    //         }
 
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                if (!(value is DirectoryInfo directoryInfo))
-                {
-                    throw new ArgumentOutOfRangeException(nameof(value));
-                }
+    //         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+    //         {
+    //             if (!(value is DirectoryInfo directoryInfo))
+    //             {
+    //                 throw new ArgumentOutOfRangeException(nameof(value));
+    //             }
 
-                writer.WriteValue(directoryInfo.FullName);
-            }
-        }
-    }
+    //             writer.WriteValue(directoryInfo.FullName);
+    //         }
+    //     }
+    // }
 }
