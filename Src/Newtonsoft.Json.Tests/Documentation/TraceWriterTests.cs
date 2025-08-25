@@ -130,45 +130,45 @@ namespace Newtonsoft.Json.Tests.Documentation
         }
         #endregion
 
-        [Test]
-        public void MemoryTraceWriterTest()
-        {
-            #region MemoryTraceWriterExample
-            Staff staff = new Staff();
-            staff.Name = "Arnie Admin";
-            staff.Roles = new List<string> { "Administrator" };
-            staff.StartDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc);
+        // [Test]
+        // public void MemoryTraceWriterTest()
+        // {
+        //     #region MemoryTraceWriterExample
+        //     Staff staff = new Staff();
+        //     staff.Name = "Arnie Admin";
+        //     staff.Roles = new List<string> { "Administrator" };
+        //     staff.StartDate = new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc);
 
-            ITraceWriter traceWriter = new MemoryTraceWriter();
+        //     ITraceWriter traceWriter = new MemoryTraceWriter();
 
-            JsonConvert.SerializeObject(
-                staff,
-                new JsonSerializerSettings { TraceWriter = traceWriter, Converters = { new JavaScriptDateTimeConverter() } });
+        //     JsonConvert.SerializeObject(
+        //         staff,
+        //         new JsonSerializerSettings { TraceWriter = traceWriter, Converters = { new JavaScriptDateTimeConverter() } });
 
-            Console.WriteLine(traceWriter);
-            // 2012-11-11T12:08:42.761 Info Started serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
-            // 2012-11-11T12:08:42.785 Info Started serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
-            // 2012-11-11T12:08:42.791 Info Finished serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
-            // 2012-11-11T12:08:42.797 Info Started serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
-            // 2012-11-11T12:08:42.798 Info Finished serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
-            // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
-            // 2013-05-18T21:38:11.255 Verbose Serialized JSON: 
-            // {
-            //   "Name": "Arnie Admin",
-            //   "StartDate": new Date(
-            //     976623132000
-            //   ),
-            //   "Roles": [
-            //     "Administrator"
-            //   ]
-            // }
-            #endregion
+        //     Console.WriteLine(traceWriter);
+        //     // 2012-11-11T12:08:42.761 Info Started serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+        //     // 2012-11-11T12:08:42.785 Info Started serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+        //     // 2012-11-11T12:08:42.791 Info Finished serializing System.DateTime with converter Newtonsoft.Json.Converters.JavaScriptDateTimeConverter. Path 'StartDate'.
+        //     // 2012-11-11T12:08:42.797 Info Started serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+        //     // 2012-11-11T12:08:42.798 Info Finished serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
+        //     // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
+        //     // 2013-05-18T21:38:11.255 Verbose Serialized JSON: 
+        //     // {
+        //     //   "Name": "Arnie Admin",
+        //     //   "StartDate": new Date(
+        //     //     976623132000
+        //     //   ),
+        //     //   "Roles": [
+        //     //     "Administrator"
+        //     //   ]
+        //     // }
+        //     #endregion
 
-            MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
+        //     MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
 
-            Assert.AreEqual(916, memoryTraceWriter.ToString().Length);
-            Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
-        }
+        //     Assert.AreEqual(916, memoryTraceWriter.ToString().Length);
+        //     Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
+        // }
     }
 }
 

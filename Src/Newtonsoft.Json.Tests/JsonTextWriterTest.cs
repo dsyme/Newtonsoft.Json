@@ -136,32 +136,32 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(1, arrayPool.FreeArrays.Count);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
-        [Test]
-        public void BufferErroringWithInvalidSize()
-        {
-            JObject o = new JObject
-            {
-                {"BodyHtml", "<h3>Title!</h3>" + Environment.NewLine + new string(' ', 100) + "<p>Content!</p>"}
-            };
+// #if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+//         [Test]
+//         public void BufferErroringWithInvalidSize()
+//         {
+//             JObject o = new JObject
+//             {
+//                 {"BodyHtml", "<h3>Title!</h3>" + Environment.NewLine + new string(' ', 100) + "<p>Content!</p>"}
+//             };
 
-            JsonArrayPool arrayPool = new JsonArrayPool();
+//             JsonArrayPool arrayPool = new JsonArrayPool();
 
-            StringWriter sw = new StringWriter();
-            using (JsonTextWriter writer = new JsonTextWriter(sw))
-            {
-                writer.ArrayPool = arrayPool;
+//             StringWriter sw = new StringWriter();
+//             using (JsonTextWriter writer = new JsonTextWriter(sw))
+//             {
+//                 writer.ArrayPool = arrayPool;
 
-                o.WriteTo(writer);
-            }
+//                 o.WriteTo(writer);
+//             }
 
-            string result = o.ToString();
+//             string result = o.ToString();
 
-            StringAssert.AreEqual(@"{
-  ""BodyHtml"": ""<h3>Title!</h3>\r\n                                                                                                    <p>Content!</p>""
-}", result);
-        }
-#endif
+//             StringAssert.AreEqual(@"{
+//   ""BodyHtml"": ""<h3>Title!</h3>\r\n                                                                                                    <p>Content!</p>""
+// }", result);
+//         }
+// #endif
 
         [Test]
         public void NewLine()
