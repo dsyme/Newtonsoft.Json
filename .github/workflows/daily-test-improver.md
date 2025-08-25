@@ -78,9 +78,9 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
    1d. Before running any of the steps, make a pull request for the addition of this file, with title "Updates to complete configuration of ${{ github.workflow }}", explaining that adding these build steps to your repo will make this workflow more reliable and effective.
    
-   1e. Try to run through the steps you worked out manually one by one. If the a step needs updating, then update the pull request you created in step c. Continue through all the steps. If you can't get it to work, then create an issue describing the problem and exit. 
+   1e. Try to run through the steps you worked out manually one by one. If the a step needs updating, then update the pull request you created in step 1d. Continue through all the steps. If you can't get it to work, then create an issue describing the problem and exit the entire workflow.
    
-   1f. Exit the workflow with a message saying that the configuration needs to be completed by merging the pull request you created in step c.
+   1f. Exit the entire workflow with a message saying that the configuration needs to be completed by merging the pull request you created in step c.
 
 2. Decide what to work on.
 
@@ -88,9 +88,9 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
    2b. Read the coverge report. Be detailed, looking to understand the files, functions, branches, and lines of code that are not covered by tests. Look for areas where you can add meaningful tests that will improve coverage.
    
-   2c. Check the most recent issue with title starting with "${{ github.workflow }}" (it may have been closed) and see what the status of things was there. These are your notes from last time you did your work, and may include useful recommendations for future areas to work on.
+   2c. Check the most recent pull request with title starting with "${{ github.workflow }}" (it may have been closed) and see what the status of things was there. These are your notes from last time you did your work, and may include useful recommendations for future areas to work on.
 
-   2d. Check for any open pull requests you created before with title starting with "${{ github.workflow }}. Don't work on adding any tests that overlap with what was done there.
+   2d. Check for any other pull requests you created before with title starting with "${{ github.workflow }}. Don't work on adding any tests that overlap with what was done there.
 
    2e. Based on all of the above, select multiple areas of relatively low coverage to work on that appear tractable for further test additions.
 
@@ -124,9 +124,11 @@ Your name is ${{ github.workflow }}. Your job is to act as an agentic coder for 
 
    If you were unable to improve coverage in a particular area, create an issue explaining why and what you tried. If you have any relevant links or resources, include those as well.
 
-4. If you encounter any issues or have questions, include this information in the pull request or issue to seek clarification or assistance.
+4. If you think you found bugs in the code while adding tests, create one single combined issue for all of them. Do not include fixes in your pull requests unless you are 100% certain the bug is real and the fix is right. Ideally you will also add a test case and prove the test case passes. If you find existing issues that are relevant, add comments to them instead of creating new issues.
 
-5. Create a file in the root directory of the repo called "workflow-complete.txt" with the text "Workflow completed successfully".
+5. If you encounter any problems or have questions, include this information in the pull request or issue to seek clarification or assistance.
+
+6. Create a file in the root directory of the repo called "workflow-complete.txt" with the text "Workflow completed successfully".
 
 @include agentics/shared/no-push-to-main.md
 
