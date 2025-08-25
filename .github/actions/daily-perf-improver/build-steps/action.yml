@@ -28,19 +28,19 @@ runs:
       shell: pwsh
       run: |
         Write-Host "Building Newtonsoft.Json in Release mode for performance testing"
-        dotnet build Src/Newtonsoft.Json.slnx -c Release --no-restore -p:LibraryFrameworks=net8.0 -p:TestFrameworks=net8.0
+        dotnet build Src/Newtonsoft.Json.slnx -c Release --no-restore -p:LibraryFrameworks=net6.0 -p:TestFrameworks=net6.0
 
     - name: Build test project with benchmarks
       shell: pwsh
       run: |
         Write-Host "Building test project with benchmark support"
-        dotnet build Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net8.0 -c Release --no-restore
+        dotnet build Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net6.0 -c Release --no-restore
 
     - name: Verify benchmark infrastructure
       shell: pwsh
       run: |
         Write-Host "Verifying benchmark infrastructure is available"
-        $testPath = "Src/Newtonsoft.Json.Tests/bin/Release/net8.0"
+        $testPath = "Src/Newtonsoft.Json.Tests/bin/Release/net6.0"
         if (Test-Path "$testPath/Newtonsoft.Json.Tests.dll") {
           Write-Host "✓ Test assembly found at $testPath"
         } else {
@@ -59,13 +59,13 @@ runs:
       shell: pwsh
       run: |
         Write-Host "Running basic tests to ensure build is functional"
-        dotnet test Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net8.0 -c Release --no-build --no-restore --filter "Category!=Performance" --logger "trx" --results-directory "TestResults" || echo "Some tests may have failed, continuing..."
+        dotnet test Src/Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj -f net6.0 -c Release --no-build --no-restore --filter "Category!=Performance" --logger "trx" --results-directory "TestResults" || echo "Some tests may have failed, continuing..."
 
     - name: Setup performance test data
       shell: pwsh
       run: |
         Write-Host "Setting up performance test data files"
-        $testDir = "Src/Newtonsoft.Json.Tests/bin/Release/net8.0"
+        $testDir = "Src/Newtonsoft.Json.Tests/bin/Release/net6.0"
         if (Test-Path "$testDir/large.json") {
           Write-Host "✓ Large test JSON file is available"
           $fileSize = (Get-Item "$testDir/large.json").Length
