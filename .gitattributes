@@ -50,3 +50,5 @@
 *.fsproj text merge=union 
 *.dbproj text merge=union 
 *.sln text eol=crlf merge=union 
+
+.github/workflows/*.lock.yml linguist-generated=true merge=ours
