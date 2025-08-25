@@ -1,0 +1,87 @@
+name: 'Build and Generate Test Coverage'
+description: 'Builds the Newtonsoft.Json project, runs tests, and generates coverage reports'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          2.1.x
+          3.1.x
+          5.0.x
+          6.0.x
+          8.0.x
+          9.0.x
+
+    - name: Display dotnet info
+      shell: bash
+      run: dotnet --info
+
+    - name: Restore dependencies
+      shell: bash
+      run: dotnet restore Src/Newtonsoft.Json.slnx
+
+    - name: Build solution  
+      shell: bash
+      run: dotnet build Src/Newtonsoft.Json.slnx --configuration Release --no-restore
+
+    - name: Run tests with coverage
+      shell: bash
+      run: |
+        # Install coverlet tool for coverage collection
+        dotnet tool install --global coverlet.console || dotnet tool update --global coverlet.console
+        
+        # Run tests for .NET 8.0 target and collect coverage
+        cd Src/Newtonsoft.Json.Tests
+        dotnet test --configuration Release --framework net8.0 --no-build \
+          --collect:"XPlat Code Coverage" \
+          --results-directory:../../TestResults \
+          --logger trx \
+          --verbosity normal
+        
+        # Also run with coverlet for more detailed coverage
+        coverlet bin/Release/net8.0/Newtonsoft.Json.Tests.dll \
+          --target "dotnet" \
+          --targetargs "test --configuration Release --framework net8.0 --no-build --verbosity normal" \
+          --format opencover \
+          --format cobertura \
+          --format json \
+          --output ../../TestResults/coverage
+
+    - name: Generate coverage report  
+      shell: bash
+      run: |
+        # Install ReportGenerator tool
+        dotnet tool install --global dotnet-reportgenerator-globaltool || dotnet tool update --global dotnet-reportgenerator-globaltool
+        
+        # Generate HTML coverage report
+        reportgenerator \
+          "-reports:TestResults/coverage.opencover.xml;TestResults/**/coverage.cobertura.xml" \
+          "-targetdir:TestResults/CoverageReport" \
+          "-reporttypes:Html;TextSummary;Cobertura;JsonSummary" \
+          "-verbosity:Info"
+        
+        # Display coverage summary
+        echo "=== Coverage Summary ==="
+        if [ -f "TestResults/CoverageReport/Summary.txt" ]; then
+          cat TestResults/CoverageReport/Summary.txt
+        fi
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results
+        path: TestResults/*.trx
+
+    - name: Upload coverage reports
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: coverage-reports
+        path: |
+          TestResults/CoverageReport/
+          TestResults/coverage.*
+          TestResults/**/coverage.cobertura.xml
