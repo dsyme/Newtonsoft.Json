@@ -190,5 +190,140 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(4, c.ByteArray.Length);
             CollectionAssert.AreEquivalent(new byte[] { 0, 1, 2, 3 }, c.ByteArray);
         }
+
+#if HAVE_LINQ || HAVE_ADO_NET
+        [Test]
+        public void WriteJson_UnsupportedType_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            JsonWriter writer = new JsonTextWriter(new System.IO.StringWriter());
+            
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.WriteJson(writer, "unsupported string", null),
+                "Unexpected value type when writing binary: System.String"
+            );
+        }
+#endif
+
+#if HAVE_LINQ || HAVE_ADO_NET
+        [Test]
+        public void ReadJson_InvalidToken_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "123"; // Integer token, not String or StartArray
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read();
+            
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.ReadJson(reader, typeof(byte[]), null, null),
+                "Unexpected token parsing binary. Expected String or StartArray, got Integer."
+            );
+        }
+
+        [Test]
+        public void ReadJson_NullToNonNullableType_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "null";
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read();
+            
+#if !DNXCORE50 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.ReadJson(reader, typeof(SqlBinary), null, null),
+                "Cannot convert null value to System.Data.SqlTypes.SqlBinary."
+            );
+#endif
+        }
+
+        [Test]
+        public void ReadByteArray_InvalidToken_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "[true, false]"; // Boolean tokens in array
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read(); // Move to StartArray
+            
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.ReadJson(reader, typeof(byte[]), null, null),
+                "Unexpected token when reading bytes: Boolean"
+            );
+        }
+
+        [Test]
+        public void ReadByteArray_UnexpectedEnd_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "[1, 2"; // Incomplete array
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read(); // Move to StartArray
+            
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.ReadJson(reader, typeof(byte[]), null, null),
+                "Unexpected end when reading bytes."
+            );
+        }
+
+        [Test]
+        public void ReadByteArray_WithComments_SkipsComments()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "[1, /* comment */ 2, 3]";
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read(); // Move to StartArray
+            
+            byte[] result = (byte[])converter.ReadJson(reader, typeof(byte[]), null, null);
+            
+            CollectionAssert.AreEquivalent(new byte[] { 1, 2, 3 }, result);
+        }
+
+        [Test]
+        public void ReadJson_UnsupportedObjectType_ThrowsException()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "\"dGVzdA==\""; // base64 encoded "test"
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read();
+            
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.ReadJson(reader, typeof(string), null, null),
+                "Unexpected object type when writing binary: System.String"
+            );
+        }
+
+        [Test]
+        public void CanConvert_UnsupportedType_ReturnsFalse()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            
+            Assert.IsFalse(converter.CanConvert(typeof(string)));
+            Assert.IsFalse(converter.CanConvert(typeof(int)));
+            Assert.IsFalse(converter.CanConvert(typeof(object)));
+        }
+
+#if !DNXCORE50 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+        [Test]
+        public void CanConvert_SqlBinaryTypes_ReturnsTrue()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            
+            Assert.IsTrue(converter.CanConvert(typeof(SqlBinary)));
+            Assert.IsTrue(converter.CanConvert(typeof(SqlBinary?)));
+        }
+#endif
+
+        [Test]
+        public void ReadByteArray_LargeValues_HandlesCorrectly()
+        {
+            BinaryConverter converter = new BinaryConverter();
+            string json = "[255, 128, 0]"; // Test edge byte values
+            JsonReader reader = new JsonTextReader(new System.IO.StringReader(json));
+            reader.Read(); // Move to StartArray
+            
+            byte[] result = (byte[])converter.ReadJson(reader, typeof(byte[]), null, null);
+            
+            CollectionAssert.AreEquivalent(new byte[] { 255, 128, 0 }, result);
+        }
+#endif
     }
 }
